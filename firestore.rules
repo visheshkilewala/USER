@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "visheshkilewala@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // User Profile Rules
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Transaction Rules
+    match /transactions/{transactionId} {
+      allow read, write: if true;
+    }
+
+    // Offer Rules
+    match /offers/{offerId} {
+      allow read, write: if true;
+    }
+
+    // Order Rules
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+  }
+}

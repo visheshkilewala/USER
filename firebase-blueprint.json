@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A household user in the Swacchta Mitra ecosystem.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the user or family." },
+        "address": { "type": "string", "description": "Household address." },
+        "city": { "type": "string", "description": "City (default: Neemuch)." },
+        "householdId": { "type": "string", "description": "Unique QR/Household ID." },
+        "swacchCoinBalance": { "type": "integer", "description": "Current token balance." },
+        "totalWasteDiverted": { "type": "number", "description": "Total KGs of waste diverted." },
+        "weeklyStats": {
+          "type": "object",
+          "properties": {
+            "dryWaste": { "type": "number" },
+            "wetWaste": { "type": "number" },
+            "co2Saved": { "type": "number" }
+          }
+        }
+      },
+      "required": ["name", "householdId", "swacchCoinBalance"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A ledger entry for waste pickup or marketplace redemption.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "businessId": { "type": "string", "description": "Reference to the business (for redemptions)." },
+        "type": { "type": "string", "enum": ["pickup", "redemption"] },
+        "amount": { "type": "integer", "description": "Coins earned (+) or spent (-)." },
+        "description": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "wasteWeight": { "type": "number", "description": "Weight in KGs (for pickups)." },
+        "offerId": { "type": "string", "description": "Reference to the offer (for redemptions)." }
+      },
+      "required": ["userId", "type", "amount", "timestamp"]
+    },
+    "Offer": {
+      "title": "Offer",
+      "description": "Local business discounts available in the marketplace.",
+      "type": "object",
+      "properties": {
+        "businessId": { "type": "string" },
+        "businessName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "coinCost": { "type": "integer" },
+        "category": { "type": "string", "enum": ["Groceries", "Services", "Events", "Neemuch Local"] },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["businessId", "businessName", "title", "coinCost", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile and balance."
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Ledger of all coin movements."
+    },
+    "/offers/{offerId}": {
+      "schema": "Offer",
+      "description": "Marketplace offers."
+    }
+  }
+}
